@@ -1,0 +1,52 @@
+{
+  "projects": [
+    {
+      "name": "Octocat Onboarding",
+      "owner": "@mona-guide",
+      "status": "Active",
+      "recentActivity": "Published the first-week contributor checklist.",
+      "priority": "High",
+      "summary": "A welcoming path that helps new contributors make their first meaningful improvement."
+    },
+    {
+      "name": "Mona's Release Radar",
+      "owner": "@release-mona",
+      "status": "At Risk",
+      "recentActivity": "Dependency review found two upgrades awaiting approval.",
+      "priority": "High",
+      "summary": "A lightweight dashboard for tracking upcoming releases and their readiness signals."
+    },
+    {
+      "name": "Tentacle Test Lab",
+      "owner": "@testocat",
+      "status": "Active",
+      "recentActivity": "Added regression coverage for the pull request workflow.",
+      "priority": "Medium",
+      "summary": "A shared test suite that keeps common contributor workflows dependable."
+    },
+    {
+      "name": "Ocean Floor Archive",
+      "owner": "@deep-sea-mona",
+      "status": "On Hold",
+      "recentActivity": "Paused metadata migration until the archive format is finalized.",
+      "priority": "Low",
+      "summary": "A searchable record of retired experiments, decisions, and useful project context."
+    },
+    {
+      "name": "Cat Banner Gallery",
+      "owner": "@mona-studio",
+      "status": "Completed",
+      "recentActivity": "Handed off the approved banner collection to community maintainers.",
+      "priority": "Low",
+      "summary": "A curated set of reusable project banners featuring Mona and friends."
+    },
+    {
+      "name": "Merge Queue Compass",
+      "owner": "@octo-ops",
+      "status": "At Risk",
+      "recentActivity": "Instrumented queue wait times for the weekday maintainer rotation.",
+      "priority": "Medium",
+      "summary": "A visibility tool that helps maintainers spot pull requests needing timely review."
+    }
+  ]
+}

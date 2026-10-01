@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="dashboard">
+    <header class="dashboard-header">
+      <h1>Project Pulse</h1>
+      <p>Stay current on the work moving our contributor community forward.</p>
+    </header>
+
+    <section id="project-grid" class="project-grid" role="list" aria-label="Projects"></section>
+
+    <section id="dashboard-state" class="dashboard-state dashboard-state--loading" role="status" aria-live="polite">
+      <h2>Loading projects</h2>
+      <p>Gathering the latest project updates.</p>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const projectGrid = document.getElementById("project-grid");
+    const dashboardState = document.getElementById("dashboard-state");
+
+    function valueOrFallback(value) {
+      return typeof value === "string" && value.trim() ? value : "Not provided";
+    }
+
+    function slugify(value) {
+      return valueOrFallback(value)
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    function createBadge(type, value) {
+      const badge = document.createElement("span");
+      const label = valueOrFallback(value);
+      const badgeClass = type === "status"
+        ? `badge--status-${slugify(label)}`
+        : `badge--priority-${slugify(label)}`;
+      badge.classList.add("badge", badgeClass);
+      badge.textContent = `${type === "status" ? "Status" : "Priority"}: ${label}`;
+      return badge;
+    }
+
+    function renderProjects(projects) {
+      const projectCards = document.createDocumentFragment();
+
+      projects.forEach((project) => {
+        const card = document.createElement("article");
+        const status = valueOrFallback(project.status);
+        const priority = valueOrFallback(project.priority);
+
+        card.classList.add("project-card", `project-card--priority-${slugify(priority)}`);
+        card.setAttribute("role", "listitem");
+
+        const badges = document.createElement("div");
+        badges.className = "project-card__badges";
+        badges.append(createBadge("status", status), createBadge("priority", priority));
+
+        const name = document.createElement("h2");
+        name.className = "project-card__name";
+        name.textContent = valueOrFallback(project.name);
+
+        const owner = document.createElement("p");
+        owner.className = "project-card__owner";
+        owner.textContent = valueOrFallback(project.owner);
+
+        const summary = document.createElement("p");
+        summary.className = "project-card__summary";
+        summary.textContent = valueOrFallback(project.summary);
+
+        const activity = document.createElement("p");
+        activity.className = "project-card__activity";
+
+        const activityLabel = document.createElement("strong");
+        activityLabel.textContent = "Recent activity";
+
+        const activityText = document.createElement("span");
+        activityText.textContent = valueOrFallback(project.recentActivity);
+        activity.append(activityLabel, activityText);
+
+        card.append(badges, name, owner, summary, activity);
+        projectCards.append(card);
+      });
+
+      projectGrid.replaceChildren(projectCards);
+    }
+
+    function showState(heading, message, isError) {
+      dashboardState.replaceChildren();
+      dashboardState.hidden = false;
+      dashboardState.className = isError
+        ? "dashboard-state dashboard-state--error"
+        : "dashboard-state";
+      dashboardState.setAttribute("role", isError ? "alert" : "status");
+
+      const stateHeading = document.createElement("h2");
+      stateHeading.textContent = heading;
+      const stateMessage = document.createElement("p");
+      stateMessage.textContent = message;
+
+      dashboardState.append(stateHeading, stateMessage);
+    }
+
+    async function loadProjects() {
+      try {
+        const response = await fetch("project-data.json");
+        if (!response.ok) {
+          throw new Error(`Request failed with HTTP status ${response.status} ${response.statusText}.`);
+        }
+
+        const data = await response.json();
+        if (!Array.isArray(data.projects)) {
+          throw new Error("Project data is missing a projects array.");
+        }
+
+        if (data.projects.length === 0) {
+          showState("No projects yet", "There are no projects to display right now.", false);
+          return;
+        }
+
+        renderProjects(data.projects);
+        dashboardState.hidden = true;
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        showState(
+          "Unable to load projects",
+          `Could not load project-data.json: ${detail} Run the “Run Project Pulse Dashboard” launch configuration and try again.`,
+          true
+        );
+      }
+    }
+
+    loadProjects();
+  </script>
+</body>
+</html>
